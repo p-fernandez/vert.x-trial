@@ -1,0 +1,9 @@
+*.class
+*.swp
+*.db
+build/
+out/
+.idea/
+.gradle/
+gradle
+.vertx
