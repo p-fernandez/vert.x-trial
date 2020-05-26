@@ -1,12 +1,15 @@
 package se.kry.codetest;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
+import io.vertx.ext.sql.SQLConnection;
 
 public class DBConnector {
 
@@ -22,10 +25,22 @@ public class DBConnector {
     client = JDBCClient.createShared(vertx, config);
   }
 
+  public void close(Handler<AsyncResult<Void>> next) {
+    client.close(closeHandler -> {
+      if (closeHandler.succeeded()) {
+        System.out.println("Database Connection closed");
+        next.handle(Future.<Void>succeededFuture());
+      } else if (closeHandler.failed()) {
+        System.out.println("Database Connection failed to close!");
+      } else {
+        System.out.println("Debug flow because it shouldn't arrive here.");
+      }
+    });
+  }
+
   public Future<ResultSet> query(String query) {
     return query(query, new JsonArray());
   }
-
 
   public Future<ResultSet> query(String query, JsonArray params) {
     if(query == null || query.isEmpty()) {
@@ -46,6 +61,4 @@ public class DBConnector {
     });
     return queryResultFuture;
   }
-
-
 }
