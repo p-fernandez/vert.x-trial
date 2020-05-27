@@ -8,6 +8,7 @@ import se.kry.domain.entity.Service;
 import se.kry.infrastructure.database.persistence.dao.DaoImpl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ServiceDaoImpl extends DaoImpl {
     private static final String DB_PATH = "poller.db";
@@ -63,5 +64,43 @@ public class ServiceDaoImpl extends DaoImpl {
             }
         });
         return services;
+    }
+
+    public Future<Service> get(Integer id) {
+        String sql = "SELECT * FROM " + DB_NAME + " WHERE id = ?";
+
+        Future<Service> service = Future.future();
+
+        JsonArray params = new JsonArray();
+        params.add(id);
+
+        super.get(sql, params).setHandler(res -> {
+            if (res.failed()) {
+                service.fail(res.cause());
+            } else {
+                JsonObject json = res.result().getRows().get(0);
+                Service storedService = new Service(json);
+                service.complete(storedService);
+            }
+        });
+        return service;
+    }
+
+    public Future<?> remove(Integer id) {
+        String sql = "DELETE FROM " + DB_NAME + " WHERE id = ?";
+
+        Future<?> removedService = Future.future();
+
+        JsonArray params = new JsonArray();
+        params.add(id);
+
+        super.get(sql, params).setHandler(res -> {
+            if (res.failed()) {
+                removedService.fail(res.cause());
+            } else {
+                removedService.complete();
+            }
+        });
+        return removedService;
     }
 }

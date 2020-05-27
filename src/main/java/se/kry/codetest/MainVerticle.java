@@ -13,6 +13,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import se.kry.domain.use_case.service.CreateService;
 import se.kry.domain.use_case.service.GetAllServices;
+import se.kry.domain.use_case.service.GetService;
+import se.kry.domain.use_case.service.RemoveService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +66,31 @@ public class MainVerticle extends AbstractVerticle {
                 getAllServices.execute().setHandler(resultHandler(req, res -> req.response()
                         .putHeader("content-type", "application/json")
                         .end(new JsonArray(res).encode())));
+            } catch (Exception ex) {
+                internalServerError(req, ex);
+            }
+        });
+
+        router.delete("/service/:id").handler(req -> {
+            try {
+                String id = req.request().getParam("id");
+                RemoveService removeService = new RemoveService(this.vertx);
+                removeService.execute(id).setHandler(resultHandler(req, res -> req.response()
+                        .setStatusCode(204)
+                        .putHeader("content-type", "application/json")
+                        .end()));
+            } catch (Exception ex) {
+                internalServerError(req, ex);
+            }
+        });
+
+        router.get("/service/:id").handler(req -> {
+            try {
+                String id = req.request().getParam("id");
+                GetService getService = new GetService(this.vertx);
+                getService.execute(id).setHandler(resultHandler(req, res -> req.response()
+                        .putHeader("content-type", "application/json")
+                        .end(new Json().encode(res))));
             } catch (Exception ex) {
                 internalServerError(req, ex);
             }

@@ -10,4 +10,7 @@ public interface IDao {
 
     Future<List<?>> getAll(String sql);
 
+    Future<?> get(String sql, JsonArray params);
+
+    Future<?> remove(String sql, JsonArray params);
 }
