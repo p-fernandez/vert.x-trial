@@ -48,6 +48,12 @@ shadowJar {
   }
 }
 
+task preRun(type:JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : createDatabase
+}
+
 test {
   useJUnitPlatform()
   testLogging {
@@ -55,14 +61,10 @@ test {
   }
 }
 
+test.dependsOn preRun
+
 run {
   args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
-}
-
-task preRun(type:JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
-
-  main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : createDatabase
 }
 
 run.dependsOn preRun
