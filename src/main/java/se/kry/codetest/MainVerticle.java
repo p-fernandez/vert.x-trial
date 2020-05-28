@@ -48,17 +48,6 @@ public class MainVerticle extends AbstractVerticle {
             .failureHandler(routingContext -> apiErrorHandler(routingContext));
 
         router.get("/service").handler(routingContext -> {
-            List<JsonObject> jsonServices = services
-            .entrySet().stream()
-              .map(service -> new JsonObject()
-               .put("name", service.getKey())
-               .put("status", service.getValue()))
-                .collect(Collectors.toList());
-            routingContext.response().putHeader("content-type", "application/json")
-            .end(new JsonArray(jsonServices).encode());
-        });
-
-        router.get("/services").handler(routingContext -> {
             GetAllServices getAllServices = new GetAllServices(this.vertx);
             getAllServices.execute().setHandler(result -> successHandler(routingContext, result));
         });
