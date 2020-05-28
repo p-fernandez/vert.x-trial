@@ -1,71 +1,105 @@
+const listContainer = document.querySelector('#service-list');
+
 function disableButtons() {
-  let buttons = document.querySelectorAll('button');
+  const buttons = document.querySelectorAll('button');
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].disabled = true;
   }
 }
 
 function enableButtons() {
-  let buttons = document.querySelectorAll('button');
+  const buttons = document.querySelectorAll('button');
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].disabled = false;
   }
 }
 
-const listContainer = document.querySelector('#service-list');
-let servicesRequest = new Request('/service');
-fetch(servicesRequest)
-.then(function(response) { return response.json(); })
-.then(function(serviceList) {
-  serviceList.forEach(service => {
-    var li = document.createElement("li");
+function addRow(service) {
+  const li = document.createElement('li');
+  li.className = 'service-' + service.id;
 
-    var div = document.createElement("div");
-    div.appendChild(document.createTextNode(service.url + ' : ' + service.name + ' : ' + service.status));
-    var button = document.createElement("button");
-    button.innerHTML = 'DELETE';
-    button.id = service.id;
-    button.className = "remove-service";
-    div.appendChild(button);
-    li.appendChild(div);
-    listContainer.appendChild(li);
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(service.url + ' : ' + service.name + ' : ' + service.status));
+  const button = createDeleteButton(service.id);
+  div.appendChild(button);
+
+  li.appendChild(div);
+  return li;
+}
+
+function addRowToContainer(service) {
+  const li = addRow(service);
+  listContainer.appendChild(li);
+}
+
+function removeRow(id) {
+  const element = document.querySelector('.service-' + id);
+  element.parentNode.removeChild(element);
+}
+
+function createDeleteButton(id) {
+  const button = document.createElement('button');
+  button.innerHTML = 'DELETE';
+  button.id = id;
+  button.className = 'remove-service';
+  button.addEventListener('click', onDelete);
+  return button;
+}
+
+function clearInputs() {
+  const url = document.querySelector('#service-url');
+  url.value = '';
+  const name = document.querySelector('#service-name');
+  name.value = '';
+}
+
+function onDelete(evt) {
+  evt.preventDefault();
+  disableButtons();
+
+  const id = evt.target.id;
+  fetch('/service/' + id, {
+     method: 'delete',
+     headers: {
+         'Accept': 'application/json, text/plain, */*',
+         'Content-Type': 'application/json'
+     }
+  })
+  .then(() => {
+     removeRow(id);
+     enableButtons();
+  })
+  .catch(() => enableButtons());
+}
+
+function onSave(evt) {
+  disableButtons();
+
+  const url = document.querySelector('#service-url').value;
+  const name = document.querySelector('#service-name').value || null;
+  fetch('/service', {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({url, name})
+  })
+  .then(res => res.json())
+  .then(json => {
+    addRowToContainer(json);
+    clearInputs();
+    enableButtons();
+  })
+  .catch(() => enableButtons());
+}
+
+const servicesRequest = new Request('/service');
+fetch(servicesRequest)
+  .then(function(response) { return response.json(); })
+  .then(function(serviceList) {
+    serviceList.forEach(addRowToContainer);
   });
 
-  const deleteButtons = document.querySelectorAll('.remove-service');
-  for (var i = 0; i < deleteButtons.length; i++) {
-    deleteButtons[i].addEventListener('click', function(evt) {
-        evt.preventDefault();
-        disableButtons();
-
-        let id = evt.target.id;
-        fetch('/service/' + id, {
-            method: 'delete',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res=> location.reload())
-        .catch(() => enableButtons());
-    });
-  }
-});
-
 const saveButton = document.querySelector('#post-service');
-saveButton.onclick = evt => {
-    disableButtons();
-
-    let url = document.querySelector('#service-url').value;
-    let name = document.querySelector('#service-name').value || null;
-    fetch('/service', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({url, name})
-    })
-    .then(res=> location.reload())
-    .catch(() => enableButtons());
-
-}
+saveButton.onclick = onSave;
