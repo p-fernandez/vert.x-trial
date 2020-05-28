@@ -20,6 +20,7 @@ sourceCompatibility = '1.8'
 mainClassName = 'io.vertx.core.Launcher'
 
 def createDatabase = 'se.kry.codetest.migrate.DBMigration'
+def seedDatabase = 'se.kry.codetest.migrate.DBSeed'
 def mainVerticleName = 'se.kry.codetest.MainVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
@@ -48,10 +49,16 @@ shadowJar {
   }
 }
 
-task preRun(type:JavaExec) {
+task migrate(type:JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
 
   main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : createDatabase
+}
+
+task seed(type:JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : seedDatabase
 }
 
 test {
@@ -61,13 +68,16 @@ test {
   }
 }
 
-test.dependsOn preRun
+test.dependsOn migrate
+test.dependsOn seed
 
 run {
   args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
 }
 
-run.dependsOn preRun
+run.dependsOn migrate
+run.dependsOn seed
+
 
 wrapper {
   gradleVersion = '4.6'

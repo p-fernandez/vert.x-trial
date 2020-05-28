@@ -20,12 +20,12 @@ public class ServiceDaoImpl extends DaoImpl implements IServiceDao {
     }
 
     public Future<Service> create(Service service) {
-        String sql = "INSERT INTO " + DB_NAME + " (uri, name, status, creation) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO " + DB_NAME + " (url, name, status, creation) VALUES (?, ?, ?, ?)";
 
         Future<Service> createdService = Future.future();
 
         JsonArray params = new JsonArray();
-        params.add(service.getUri());
+        params.add(service.getUrl());
         params.add(service.getName());
         params.add(service.getStatus());
         params.add(service.getCreation());

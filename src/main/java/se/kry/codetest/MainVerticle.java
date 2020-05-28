@@ -4,7 +4,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -14,8 +13,6 @@ import se.kry.domain.interfaces.exception.NotFoundException;
 import se.kry.domain.use_case.service.*;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -121,6 +118,11 @@ public class MainVerticle extends AbstractVerticle {
         Throwable failure = routingContext.failure();
         if (failure instanceof NotFoundException) {
             notFoundResponse(routingContext, failure);
+            return;
+        }
+
+        if (failure instanceof NullPointerException) {
+            internalServerErrorResponse(routingContext, new Exception("Internal server error"));
             return;
         }
 

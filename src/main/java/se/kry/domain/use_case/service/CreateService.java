@@ -20,9 +20,6 @@ public class CreateService {
     public Future<Service> execute(JsonObject jsonBody) {
         Future<Service> createdService = Future.future();
 
-        jsonBody.put("id", 0);
-        jsonBody.put("creation", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-
         service = new Service(jsonBody);
 
         serviceManagerImpl.createService(service).setHandler(res -> {

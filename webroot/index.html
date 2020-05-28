@@ -12,6 +12,11 @@ KRY status poller
 <button id="post-service">Save</button>
 
 </body>
-<script src="static/code.js">
+<script type="text/javascript" language="javascript">
+    var versionUpdate = (new Date()).getTime();
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "static/code.js?v=" + versionUpdate;
+    document.body.appendChild(script);
 </script>
 </html>

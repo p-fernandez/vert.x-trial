@@ -2,41 +2,44 @@ package se.kry.domain.entity;
 
 import io.vertx.core.json.JsonObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Service {
   private Integer id = 0;
-  private String uri;
+  private String url;
   private String name;
   private String status;
   private String creation;
 
-  public Service(String uri) {
-    this.uri = uri;
+  public Service(String url) {
+    this.url = url;
     this.name = null;
     this.status = null;
     this.creation = null;
   }
 
-  public Service(int id, String uri, String name, String status, String creation) {
+  public Service(int id, String url, String name, String status, String creation) {
     this.id = id;
-    this.uri = uri;
+    this.url = url;
     this.name = name;
     this.status = status;
     this.creation = creation;
   }
 
-  public Service(String uri, String name, String status, String creation) {
-    this.uri = uri;
+  public Service(String url, String name, String status, String creation) {
+    this.url = url;
     this.name = name;
     this.status = status;
     this.creation = creation;
   }
 
   public Service(JsonObject jsonObject) {
-    this.id = jsonObject.getInteger("id");
-    this.uri = jsonObject.getString("uri");
-    this.name = jsonObject.getString("name");
-    this.status = jsonObject.getString("status");
-    this.creation = jsonObject.getString("creation");
+    setId(jsonObject.getInteger("id"));
+    setUrl(jsonObject.getString("url"));
+    setName(jsonObject.getString("name"));
+    setStatus(jsonObject.getString("status"));
+    setCreation(jsonObject.getString("creation"));
   }
 
   public Integer getId() {
@@ -44,15 +47,15 @@ public class Service {
   }
 
   public void setId(Integer id) {
-    this.id = id;
+    this.id = id != null ? id : 0;
   }
 
-  public String getUri() {
-    return uri;
+  public String getUrl() {
+    return url;
   }
 
-  public void setUri(String uri) {
-    this.uri = uri;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public String getName() {
@@ -60,7 +63,7 @@ public class Service {
   }
 
   public void setName(String name) {
-    this.name = name;
+    this.name = name != null ? name : "";
   }
 
   public String getStatus() {
@@ -68,7 +71,7 @@ public class Service {
   }
 
   public void setStatus(String status) {
-    this.status = status;
+    this.status = status != null ? status : "UNKNOWN";
   }
 
   public String getCreation() {
@@ -76,6 +79,8 @@ public class Service {
   }
 
   public void setCreation(String creation) {
-    this.creation = creation;
+    this.creation = creation != null
+      ? creation
+      : new SimpleDateFormat("yyyy-MM-dd").format(new Date());
   }
 }
