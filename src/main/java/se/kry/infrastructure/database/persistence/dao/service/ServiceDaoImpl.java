@@ -80,16 +80,18 @@ public class ServiceDaoImpl extends DaoImpl implements IServiceDao {
                 service.fail(res.cause());
             } else {
                 List<JsonObject> rows = res.result().getRows();
+                // rows.get(999999999); // Uncomment / comment to force exception or not
 
                 if (rows.size() == 0) {
                     service.fail(new DatabaseRecordNotFoundException("Id : " + id + " not found"));
                 } else {
-                    JsonObject json = rows.get(0); // forzando la excepcion
+                    JsonObject json = rows.get(0);
                     Service storedService = new Service(json);
                     service.complete(storedService);
                 }
             }
         });
+
         return service;
     }
 
