@@ -1,3 +1,17 @@
+function disableButtons() {
+  let buttons = document.querySelectorAll('button');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].disabled = true;
+  }
+}
+
+function enableButtons() {
+  let buttons = document.querySelectorAll('button');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].disabled = false;
+  }
+}
+
 const listContainer = document.querySelector('#service-list');
 let servicesRequest = new Request('/service');
 fetch(servicesRequest)
@@ -20,9 +34,9 @@ fetch(servicesRequest)
   const deleteButtons = document.querySelectorAll('.remove-service');
   for (var i = 0; i < deleteButtons.length; i++) {
     deleteButtons[i].addEventListener('click', function(evt) {
-        console.log(evt);
         evt.preventDefault();
-        console.log(evt.target);
+        disableButtons();
+
         let id = evt.target.id;
         fetch('/service/' + id, {
             method: 'delete',
@@ -30,13 +44,17 @@ fetch(servicesRequest)
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             }
-        }).then(res=> location.reload());
+        })
+        .then(res=> location.reload())
+        .catch(() => enableButtons());
     });
   }
 });
 
 const saveButton = document.querySelector('#post-service');
 saveButton.onclick = evt => {
+    disableButtons();
+
     let urlName = document.querySelector('#url-name').value;
     fetch('/service', {
       method: 'post',
@@ -45,5 +63,8 @@ saveButton.onclick = evt => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({url:urlName})
-    }).then(res=> location.reload());
+    })
+    .then(res=> location.reload())
+    .catch(() => enableButtons());
+
 }
