@@ -21,7 +21,7 @@ fetch(servicesRequest)
     var li = document.createElement("li");
 
     var div = document.createElement("div");
-    div.appendChild(document.createTextNode(service.url + ' : ' + service.status));
+    div.appendChild(document.createTextNode(service.url + ' : ' + service.name + ' : ' + service.status));
     var button = document.createElement("button");
     button.innerHTML = 'DELETE';
     button.id = service.id;
@@ -55,14 +55,15 @@ const saveButton = document.querySelector('#post-service');
 saveButton.onclick = evt => {
     disableButtons();
 
-    let urlName = document.querySelector('#url-name').value;
+    let url = document.querySelector('#service-url').value;
+    let name = document.querySelector('#service-name').value || null;
     fetch('/service', {
       method: 'post',
       headers: {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({url:urlName})
+      body: JSON.stringify({url, name})
     })
     .then(res=> location.reload())
     .catch(() => enableButtons());
