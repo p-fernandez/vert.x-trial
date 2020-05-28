@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import se.kry.domain.entity.Service;
+import se.kry.infrastructure.interfaces.exception.DatabaseRecordNotFoundException;
 import se.kry.infrastructure.database.persistence.dao.DaoImpl;
 
 import java.util.ArrayList;
@@ -78,9 +79,15 @@ public class ServiceDaoImpl extends DaoImpl {
             if (res.failed()) {
                 service.fail(res.cause());
             } else {
-                JsonObject json = res.result().getRows().get(0);
-                Service storedService = new Service(json);
-                service.complete(storedService);
+                List<JsonObject> rows = res.result().getRows();
+
+                if (rows.size() == 0) {
+                    service.fail(new DatabaseRecordNotFoundException("Id : " + id + " not found"));
+                } else {
+                    JsonObject json = rows.get(0); // forzando la excepcion
+                    Service storedService = new Service(json);
+                    service.complete(storedService);
+                }
             }
         });
         return service;

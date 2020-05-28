@@ -43,23 +43,25 @@ public class ServicePersistenceManager {
   }
 
   public Future<Service> getService(Integer id) {
-    Future<Service> service = Future.future();
+      Future<Service> service = Future.future();
 
-    serviceDao.get(id).setHandler(res -> {
-      if (res.failed()) {
-        service.fail(res.cause());
-      } else {
-        service.complete(res.result());
-      }
-    });
+      serviceDao.get(id).setHandler(res -> {
+        if (res.failed()) {
+          service.fail(res.cause());
+        } else {
+          service.complete(res.result());
+        }
+      });
 
-    return service;
+      return service;
   }
 
   public Future<?> removeService(Integer id) {
     Future<Service> service = Future.future();
 
-    serviceDao.remove(id).setHandler(res -> {
+    serviceDao.get(id).compose(outcome -> {
+      return serviceDao.remove(id);
+    }).setHandler(res -> {
       if (res.failed()) {
         service.fail(res.cause());
       } else {

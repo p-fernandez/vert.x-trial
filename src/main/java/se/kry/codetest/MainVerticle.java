@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -11,6 +12,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import se.kry.domain.interfaces.exception.NotFoundException;
 import se.kry.domain.use_case.service.CreateService;
 import se.kry.domain.use_case.service.GetAllServices;
 import se.kry.domain.use_case.service.GetService;
@@ -67,7 +69,7 @@ public class MainVerticle extends AbstractVerticle {
                         .putHeader("content-type", "application/json")
                         .end(new JsonArray(res).encode())));
             } catch (Exception ex) {
-                internalServerError(req, ex);
+                serviceUnavailable(req, ex);
             }
         });
 
@@ -80,7 +82,7 @@ public class MainVerticle extends AbstractVerticle {
                         .putHeader("content-type", "application/json")
                         .end()));
             } catch (Exception ex) {
-                internalServerError(req, ex);
+                serviceUnavailable(req, ex);
             }
         });
 
@@ -92,7 +94,7 @@ public class MainVerticle extends AbstractVerticle {
                         .putHeader("content-type", "application/json")
                         .end(new Json().encode(res))));
             } catch (Exception ex) {
-                internalServerError(req, ex);
+                serviceUnavailable(req, ex);
             }
         });
 
@@ -104,7 +106,7 @@ public class MainVerticle extends AbstractVerticle {
                         .putHeader("content-type", "application/json")
                         .end(new Json().encode(res))));
             } catch (Exception ex) {
-                internalServerError(req, ex);
+                serviceUnavailable(req, ex);
             }
         });
     }
@@ -114,13 +116,18 @@ public class MainVerticle extends AbstractVerticle {
             if (res.succeeded()) {
                 handler.handle(res.result());
             } else {
+                if (res.cause() instanceof NotFoundException) {
+                   notFoundResponse(req, res.cause());
+                   return;
+                }
+
                 serviceUnavailable(req, res.cause());
             }
         };
     }
 
-    private void internalServerError(RoutingContext req, Throwable ex) {
-        req.response().setStatusCode(500)
+    private void notFoundResponse(RoutingContext req, Throwable ex) {
+        req.response().setStatusCode(404)
                 .putHeader("content-type", "application/json")
                 .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
     }

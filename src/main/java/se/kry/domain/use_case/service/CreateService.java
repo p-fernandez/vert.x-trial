@@ -6,6 +6,9 @@ import io.vertx.core.json.JsonObject;
 import se.kry.domain.entity.Service;
 import se.kry.domain.entity.ServiceManagerImpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class CreateService {
     public ServiceManagerImpl serviceManagerImpl;
     public Service service;
@@ -18,7 +21,7 @@ public class CreateService {
         Future<Service> createdService = Future.future();
 
         jsonBody.put("id", 0);
-        jsonBody.put("creation", "2020-12-21");
+        jsonBody.put("creation", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         service = new Service(jsonBody);
 
