@@ -6,7 +6,7 @@ import se.kry.infrastructure.database.persistence.ServicePersistenceManager;
 
 import java.util.List;
 
-public class ServiceManagerImpl implements ServiceManager {
+public class ServiceManagerImpl implements IServiceManager {
     private final ServicePersistenceManager persistenceManager;
 
    public ServiceManagerImpl(Vertx vertx) {

@@ -11,7 +11,7 @@ import se.kry.infrastructure.database.persistence.dao.DaoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceDaoImpl extends DaoImpl {
+public class ServiceDaoImpl extends DaoImpl implements IServiceDao {
     private static final String DB_PATH = "poller.db";
     private static final String DB_NAME = "service";
 

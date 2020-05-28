@@ -4,7 +4,7 @@ import io.vertx.core.Future;
 
 import java.util.List;
 
-public interface ServiceManager {
+public interface IServiceManager {
   Future<Service> createService(Service service);
 
   Future<List<Service>> getAllServices();
