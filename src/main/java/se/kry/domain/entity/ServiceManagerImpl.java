@@ -9,7 +9,7 @@ import java.util.List;
 public class ServiceManagerImpl implements IServiceManager {
     private final ServicePersistenceManager persistenceManager;
 
-   public ServiceManagerImpl(Vertx vertx) {
+    public ServiceManagerImpl(Vertx vertx) {
        persistenceManager = new ServicePersistenceManager(vertx);
    }
 

@@ -1,7 +1,6 @@
 package se.kry.codetest.migrate;
 
 import io.vertx.core.Vertx;
-import se.kry.codetest.DBConnector;
 import se.kry.infrastructure.database.persistence.client.SQLiteClient;
 
 public class DBMigration {
