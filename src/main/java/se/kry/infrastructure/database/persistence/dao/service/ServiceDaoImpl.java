@@ -112,4 +112,25 @@ public class ServiceDaoImpl extends DaoImpl implements IServiceDao {
         });
         return removedService;
     }
+
+    public Future<Service> update(Service service) {
+        String sql = "UPDATE " + DB_NAME + " SET url = ?, name = ?, status = ? WHERE id = ?";
+
+        Future<Service> updatedService = Future.future();
+
+        JsonArray params = new JsonArray();
+        params.add(service.getUrl());
+        params.add(service.getName());
+        params.add(service.getStatus());
+        params.add(service.getId());
+
+        super.update(sql, params).setHandler(res -> {
+            if (res.failed()) {
+                updatedService.fail(res.cause());
+            } else {
+                updatedService.complete(service);
+            }
+        });
+        return updatedService;
+    }
 }

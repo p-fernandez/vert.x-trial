@@ -15,4 +15,7 @@ public interface IDao {
     Future<ResultSet> get(String sql, JsonArray params);
 
     Future<ResultSet> remove(String sql, JsonArray params);
+
+    Future<UpdateResult> update(String sql, JsonArray params);
+
 }

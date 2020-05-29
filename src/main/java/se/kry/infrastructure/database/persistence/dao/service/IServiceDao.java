@@ -13,4 +13,6 @@ public interface IServiceDao {
     Future<Service> get(Integer id);
 
     Future<?> remove(Integer id);
+
+    Future<Service> update(Service service);
 }

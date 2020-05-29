@@ -69,4 +69,18 @@ public class ServiceManagerImpl implements IServiceManager {
         return removedService;
     }
 
+    public Future<Service> updateService(Service service) {
+        Future<Service> updatedService = Future.future();
+
+        persistenceManager.updateService(service).setHandler(res -> {
+            if (res.failed()) {
+                updatedService.fail(res.cause());
+            } else {
+                updatedService.complete(res.result());
+            }
+        });
+
+        return updatedService;
+    }
+
 }

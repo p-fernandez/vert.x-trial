@@ -83,4 +83,15 @@ public class Service {
       ? creation
       : new SimpleDateFormat("yyyy-MM-dd").format(new Date());
   }
+
+  public JsonObject toJsonObject() {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.put("id", this.getId());
+    jsonObject.put("url", this.getUrl());
+    jsonObject.put("name", this.getName());
+    jsonObject.put("status", this.getStatus());
+    jsonObject.put("creation", this.getCreation());
+
+    return jsonObject;
+  }
 }

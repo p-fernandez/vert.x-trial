@@ -68,4 +68,17 @@ public abstract class DaoImpl implements IDao{
         });
         return queryResultFuture;
     }
+
+    public Future<UpdateResult> update(String sql, JsonArray params) {
+        Future<UpdateResult> queryResultFuture = Future.future();
+
+        client.update(sql, params).setHandler(res -> {
+            if (res.failed()) {
+                queryResultFuture.fail(res.cause());
+            } else {
+                queryResultFuture.complete(res.result());
+            }
+        });
+        return queryResultFuture;
+    }
 }

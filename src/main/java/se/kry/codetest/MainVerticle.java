@@ -12,20 +12,19 @@ import io.vertx.ext.web.handler.StaticHandler;
 import se.kry.domain.interfaces.exception.NotFoundException;
 import se.kry.domain.use_case.service.*;
 
-import java.util.HashMap;
-
 public class MainVerticle extends AbstractVerticle {
-
-    private HashMap<String, String> services = new HashMap<>();
-    //TODO use this
-    private BackgroundPoller poller = new BackgroundPoller();
+    //private BackgroundPoller poller;
 
     @Override
     public void start(Future<Void> startFuture) {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
-        vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices(services));
+
+        //poller = new BackgroundPoller(vertx);
+        //vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices());
+
         setRoutes(router);
+
         vertx
             .createHttpServer()
             .requestHandler(router)
@@ -69,6 +68,13 @@ public class MainVerticle extends AbstractVerticle {
             JsonObject jsonBody = routingContext.getBodyAsJson();
             CreateService createService = new CreateService(this.vertx);
             createService.execute(jsonBody).setHandler(result -> successHandler(routingContext, result, 201));
+        });
+
+        router.put("/service/:id").handler(routingContext -> {
+            String id = routingContext.request().getParam("id");
+            JsonObject jsonBody = routingContext.getBodyAsJson();
+            UpdateService updateService = new UpdateService(this.vertx);
+            updateService.execute(id, jsonBody).setHandler(result -> successHandler(routingContext, result, 200));
         });
     }
 
