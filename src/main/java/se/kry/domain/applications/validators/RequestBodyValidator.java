@@ -22,7 +22,7 @@ public class RequestBodyValidator {
 
             Pattern hostPattern = Pattern.compile("^(www.)?([a-zA-Z0-9]+.)?[a-zA-Z0-9]*\\.[a-z]{2,3}(\\.[a-z]+)?$", Pattern.CASE_INSENSITIVE);
             Matcher matcher = hostPattern.matcher(obj.getHost());
-            Boolean matches = matcher.matches();
+            boolean matches = matcher.matches();
             if (!matches) {
                 throw new ValidatorException("Wrong hostname: " + obj.getHost());
             }

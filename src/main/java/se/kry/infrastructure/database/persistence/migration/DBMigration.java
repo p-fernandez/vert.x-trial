@@ -1,8 +1,8 @@
 package se.kry.infrastructure.database.persistence.migration;
 
 import io.vertx.core.Vertx;
-import se.kry.domain.config.service.Database;
-import se.kry.infrastructure.database.persistence.client.SQLiteClient;
+import se.kry.domain.config.services.Database;
+import se.kry.infrastructure.database.persistence.clients.SQLiteClient;
 
 public class DBMigration {
   private static final String sql = "CREATE TABLE IF NOT EXISTS " + Database.TABLE + " (id INTEGER PRIMARY KEY, url VARCHAR(128) NOT NULL, name VARCHAR(255), status VARCHAR(255), creation VARCHAR(255))";
@@ -20,12 +20,11 @@ public class DBMigration {
         done.cause().printStackTrace();
       }
 
-      connector.close((nothing) -> {
-        vertx.close(shutdown -> {
+      connector.close((nothing) -> vertx.close(shutdown -> {
           System.out.println("vert.x shutdown");
           System.exit(0);
-        });
-      });
+        })
+      );
     });
   }
 }

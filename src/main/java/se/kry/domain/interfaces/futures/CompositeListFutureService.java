@@ -10,6 +10,6 @@ import java.util.List;
 public interface CompositeListFutureService extends CompositeFuture {
 
     static CompositeFuture all(List<Future<Service>> futures) {
-        return CompositeFutureImpl.all(futures.toArray(new Future[futures.size()]));
+        return CompositeFutureImpl.all(futures.toArray(new Future[0]));
     }
 }

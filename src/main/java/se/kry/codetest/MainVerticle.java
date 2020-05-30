@@ -3,15 +3,20 @@ package se.kry.codetest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import se.kry.domain.config.websockets.WebSocket;
 import se.kry.domain.interfaces.exceptions.NotFoundException;
 import se.kry.domain.interfaces.exceptions.ValidatorException;
 import se.kry.domain.use_cases.services.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainVerticle extends AbstractVerticle {
     private BackgroundPoller poller;
@@ -28,6 +33,7 @@ public class MainVerticle extends AbstractVerticle {
 
         vertx
             .createHttpServer()
+            .websocketHandler(this::webSocketHandler)
             .requestHandler(router)
             .listen(8080, result -> {
                 if (result.succeeded()) {
@@ -39,23 +45,45 @@ public class MainVerticle extends AbstractVerticle {
             });
     }
 
+    private void webSocketHandler(ServerWebSocket handler) {
+        Set<String> ids = new HashSet<>();
+        final String id = handler.textHandlerID();
+        System.out.println("Client connected: " + id);
+        ids.add(id); // We add it to the pool of clients.
+
+        vertx.eventBus().consumer(WebSocket.WS_PATH, message -> {
+            // We are unaware if the client disconnected so we check
+            // the clients pool first to avoid an UnhandledException.
+            if (ids.contains(id)) {
+                handler.writeTextMessage((String) message.body());
+            }
+        });
+
+        handler.textMessageHandler(message -> vertx.eventBus().publish(WebSocket.WS_PATH, message));
+
+        handler.closeHandler(message -> {
+            ids.remove(id);
+            System.out.println("Client disconnected: " + id);
+        });
+    }
+
     private void setRoutes(Router router) {
         router.route("/*").handler(StaticHandler.create())
-            .failureHandler(routingContext -> apiErrorHandler(routingContext));
+            .failureHandler(this::apiErrorHandler);
 
-        router.get("/service").handler(routingContext -> {
+        router.get("/services").handler(routingContext -> {
             GetAllServices getAllServices = new GetAllServices(this.vertx);
             getAllServices.execute().setHandler(result -> successHandler(routingContext, result));
         });
 
-        router.delete("/service/:id").handler(routingContext -> {
+        router.delete("/services/:id").handler(routingContext -> {
             String id = routingContext.request().getParam("id");
 
             RemoveService removeService = new RemoveService(this.vertx);
             removeService.execute(id).setHandler(result -> successHandler(routingContext, result, 204));
         });
 
-        router.get("/service/:id").handler(routingContext -> {
+        router.get("/services/:id").handler(routingContext -> {
             String id = routingContext.request().getParam("id");
 
             GetService getService = new GetService(this.vertx);
@@ -67,14 +95,14 @@ public class MainVerticle extends AbstractVerticle {
             testService.execute().setHandler(result -> successHandler(routingContext, result));
         });
 
-        router.post("/service").handler(routingContext -> {
+        router.post("/services").handler(routingContext -> {
             JsonObject jsonBody = routingContext.getBodyAsJson();
 
             CreateService createService = new CreateService(this.vertx);
             createService.execute(jsonBody).setHandler(result -> successHandler(routingContext, result, 201));
         });
 
-        router.put("/service/:id")
+        router.put("/services/:id")
             .handler(routingContext -> {
                 String id = routingContext.request().getParam("id");
                 JsonObject jsonBody = routingContext.getBodyAsJson();
@@ -102,12 +130,6 @@ public class MainVerticle extends AbstractVerticle {
             .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
     }
 
-    private void serviceUnavailableResponse(RoutingContext routingContext, Throwable ex) {
-        routingContext.response().setStatusCode(503)
-            .putHeader("content-type", "application/json")
-            .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
-    }
-
     private void successHandler(RoutingContext routingContext, AsyncResult<?> result) {
         if (result.failed()) {
             routingContext.fail(result.cause());
@@ -116,7 +138,7 @@ public class MainVerticle extends AbstractVerticle {
 
         routingContext.response()
             .putHeader("content-type", "application/json")
-            .end(new Json().encode(result.result()));
+            .end(Json.encode(result.result()));
     }
 
     private void successHandler(RoutingContext routingContext, AsyncResult<?> result, Integer statusCode) {
@@ -128,7 +150,7 @@ public class MainVerticle extends AbstractVerticle {
         routingContext.response()
             .setStatusCode(statusCode)
             .putHeader("content-type", "application/json")
-            .end(new Json().encode(result.result()));
+            .end(Json.encode(result.result()));
     }
 
     private void apiErrorHandler(RoutingContext routingContext) {

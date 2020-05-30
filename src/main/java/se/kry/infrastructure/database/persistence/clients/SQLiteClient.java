@@ -1,4 +1,4 @@
-package se.kry.infrastructure.database.persistence.client;
+package se.kry.infrastructure.database.persistence.clients;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -30,7 +30,7 @@ public class SQLiteClient {
     client.close(closeHandler -> {
       if (closeHandler.succeeded()) {
         System.out.println("Database Connection closed");
-        next.handle(Future.<Void>succeededFuture());
+        next.handle(Future.succeededFuture());
       } else if (closeHandler.failed()) {
         System.out.println("Database Connection failed to close!");
       } else {

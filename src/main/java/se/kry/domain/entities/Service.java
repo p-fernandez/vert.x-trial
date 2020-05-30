@@ -1,7 +1,7 @@
 package se.kry.domain.entities;
 
 import io.vertx.core.json.JsonObject;
-import se.kry.domain.config.service.ServiceStatus;
+import se.kry.domain.config.services.ServiceStatus;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

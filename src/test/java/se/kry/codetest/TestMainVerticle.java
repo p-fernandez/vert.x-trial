@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import se.kry.domain.config.services.Api;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +29,7 @@ public class TestMainVerticle {
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   void start_http_server(Vertx vertx, VertxTestContext testContext) {
     WebClient.create(vertx)
-        .get(8080, "::1", "/service")
+        .get(8080, "::1", Api.PATH)
         .send(response -> testContext.verify(() -> {
           assertEquals(200, response.result().statusCode());
           JsonArray body = response.result().bodyAsJsonArray();

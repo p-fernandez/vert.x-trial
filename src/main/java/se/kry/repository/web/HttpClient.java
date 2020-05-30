@@ -3,7 +3,6 @@ package se.kry.repository.web;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 
@@ -25,7 +24,7 @@ public class HttpClient {
                 } else {
                     HttpResponse<Buffer> response = res.result();
                     Integer statusCode = response.statusCode();
-                    SuccessfulResponse result = new SuccessfulResponse(statusCode, new JsonObject());
+                    SuccessfulResponse result = new SuccessfulResponse(statusCode);
                     request.complete(result);
                 }
             });

@@ -1,4 +1,4 @@
-package se.kry.domain.config.service;
+package se.kry.domain.config.services;
 
 public enum ServiceStatus {
     FAIL("FAIL"),

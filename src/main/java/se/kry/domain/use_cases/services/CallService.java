@@ -2,7 +2,7 @@ package se.kry.domain.use_cases.services;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import se.kry.domain.config.service.ServiceStatus;
+import se.kry.domain.config.services.ServiceStatus;
 import se.kry.domain.entities.Service;
 import se.kry.repository.web.HttpClient;
 

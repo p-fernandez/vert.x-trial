@@ -4,7 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import se.kry.domain.config.service.Database;
+import se.kry.domain.config.services.Database;
 import se.kry.domain.entities.Service;
 import se.kry.infrastructure.interfaces.exceptions.DatabaseRecordNotFoundException;
 import se.kry.infrastructure.database.persistence.dao.DaoImpl;

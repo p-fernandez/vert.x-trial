@@ -76,7 +76,6 @@ run {
 }
 
 run.dependsOn migrate
-run.dependsOn seed
 
 
 wrapper {
