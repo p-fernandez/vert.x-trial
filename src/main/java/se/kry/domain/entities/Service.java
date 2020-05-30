@@ -1,6 +1,7 @@
 package se.kry.domain.entities;
 
 import io.vertx.core.json.JsonObject;
+import se.kry.domain.config.service.ServiceStatus;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,7 +72,7 @@ public class Service {
   }
 
   public void setStatus(String status) {
-    this.status = status != null ? status : "UNKNOWN";
+    this.status = status != null ? status : String.valueOf(ServiceStatus.UNKNOWN);
   }
 
   public String getCreation() {

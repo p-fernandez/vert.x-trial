@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import se.kry.domain.config.service.Database;
 import se.kry.domain.entities.Service;
 import se.kry.infrastructure.interfaces.exceptions.DatabaseRecordNotFoundException;
 import se.kry.infrastructure.database.persistence.dao.DaoImpl;
@@ -12,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDaoImpl extends DaoImpl implements IServiceDao {
-    private static final String DB_PATH = "poller.db";
-    private static final String DB_NAME = "service";
+    private static final String DB_PATH = Database.NAME;
+    private static final String DB_NAME = Database.TABLE;
 
     public ServiceDaoImpl(Vertx vertx) {
         super(vertx, DB_PATH);
@@ -80,7 +81,6 @@ public class ServiceDaoImpl extends DaoImpl implements IServiceDao {
                 service.fail(res.cause());
             } else {
                 List<JsonObject> rows = res.result().getRows();
-                // rows.get(999999999); // Uncomment / comment to force exception or not
 
                 if (rows.size() == 0) {
                     service.fail(new DatabaseRecordNotFoundException("Id : " + id + " not found"));

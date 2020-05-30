@@ -8,9 +8,7 @@ import java.util.List;
 
 public class TestService {
 
-    public TestService(Vertx vertx) {
-
-    }
+    public TestService() { }
 
     public Future<List<String>> execute() {
         Future<List<String>> service = Future.future();

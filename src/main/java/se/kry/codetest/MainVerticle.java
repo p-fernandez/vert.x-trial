@@ -22,7 +22,7 @@ public class MainVerticle extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
 
         poller = new BackgroundPoller(vertx);
-        // vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices());
+        vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices());
 
         setRoutes(router);
 
@@ -63,7 +63,7 @@ public class MainVerticle extends AbstractVerticle {
         });
 
         router.get("/test").handler(routingContext -> {
-            TestService testService = new TestService(this.vertx);
+            TestService testService = new TestService();
             testService.execute().setHandler(result -> successHandler(routingContext, result));
         });
 
