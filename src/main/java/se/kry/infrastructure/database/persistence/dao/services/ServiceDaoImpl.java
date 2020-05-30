@@ -1,11 +1,11 @@
-package se.kry.infrastructure.database.persistence.dao.service;
+package se.kry.infrastructure.database.persistence.dao.services;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import se.kry.domain.entity.Service;
-import se.kry.infrastructure.interfaces.exception.DatabaseRecordNotFoundException;
+import se.kry.domain.entities.Service;
+import se.kry.infrastructure.interfaces.exceptions.DatabaseRecordNotFoundException;
 import se.kry.infrastructure.database.persistence.dao.DaoImpl;
 
 import java.util.ArrayList;

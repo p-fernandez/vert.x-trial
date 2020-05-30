@@ -1,9 +1,9 @@
-package se.kry.domain.use_case.service;
+package se.kry.domain.use_cases.services;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import se.kry.domain.entity.Service;
-import se.kry.domain.entity.ServiceManagerImpl;
+import se.kry.domain.entities.Service;
+import se.kry.domain.entities.ServiceManagerImpl;
 
 import java.util.List;
 
@@ -15,16 +15,16 @@ public class GetAllServices {
     }
 
     public Future<List<Service>> execute() {
-        Future<List<Service>> services = Future.future();
+        Future<List<Service>> gotServices = Future.future();
 
         serviceManagerImpl.getAllServices().setHandler(res -> {
             if (res.failed()) {
-                services.fail(res.cause());
+                gotServices.fail(res.cause());
             } else {
-                services.complete(res.result());
+                gotServices.complete(res.result());
             }
         });
 
-        return services;
+        return gotServices;
     }
 }

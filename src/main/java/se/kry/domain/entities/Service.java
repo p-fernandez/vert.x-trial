@@ -1,4 +1,4 @@
-package se.kry.domain.entity;
+package se.kry.domain.entities;
 
 import io.vertx.core.json.JsonObject;
 

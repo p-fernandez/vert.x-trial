@@ -1,8 +1,7 @@
-package se.kry.domain.use_case.service;
+package se.kry.domain.use_cases.services;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import se.kry.domain.entity.Service;
 
 import java.util.ArrayList;
 import java.util.List;

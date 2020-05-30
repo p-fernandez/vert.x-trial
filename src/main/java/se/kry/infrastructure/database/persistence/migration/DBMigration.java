@@ -1,4 +1,4 @@
-package se.kry.codetest.migrate;
+package se.kry.infrastructure.database.persistence.migration;
 
 import io.vertx.core.Vertx;
 import se.kry.infrastructure.database.persistence.client.SQLiteClient;

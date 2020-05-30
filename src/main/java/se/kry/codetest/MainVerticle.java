@@ -9,19 +9,20 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
-import se.kry.domain.interfaces.exception.NotFoundException;
-import se.kry.domain.use_case.service.*;
+import se.kry.domain.interfaces.exceptions.NotFoundException;
+import se.kry.domain.interfaces.exceptions.ValidatorException;
+import se.kry.domain.use_cases.services.*;
 
 public class MainVerticle extends AbstractVerticle {
-    //private BackgroundPoller poller;
+    private BackgroundPoller poller;
 
     @Override
     public void start(Future<Void> startFuture) {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
-        //poller = new BackgroundPoller(vertx);
-        //vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices());
+        poller = new BackgroundPoller(vertx);
+        // vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices());
 
         setRoutes(router);
 
@@ -49,12 +50,14 @@ public class MainVerticle extends AbstractVerticle {
 
         router.delete("/service/:id").handler(routingContext -> {
             String id = routingContext.request().getParam("id");
+
             RemoveService removeService = new RemoveService(this.vertx);
             removeService.execute(id).setHandler(result -> successHandler(routingContext, result, 204));
         });
 
         router.get("/service/:id").handler(routingContext -> {
             String id = routingContext.request().getParam("id");
+
             GetService getService = new GetService(this.vertx);
             getService.execute(id).setHandler(result -> successHandler(routingContext, result));
         });
@@ -66,16 +69,25 @@ public class MainVerticle extends AbstractVerticle {
 
         router.post("/service").handler(routingContext -> {
             JsonObject jsonBody = routingContext.getBodyAsJson();
+
             CreateService createService = new CreateService(this.vertx);
             createService.execute(jsonBody).setHandler(result -> successHandler(routingContext, result, 201));
         });
 
-        router.put("/service/:id").handler(routingContext -> {
-            String id = routingContext.request().getParam("id");
-            JsonObject jsonBody = routingContext.getBodyAsJson();
-            UpdateService updateService = new UpdateService(this.vertx);
-            updateService.execute(id, jsonBody).setHandler(result -> successHandler(routingContext, result, 200));
-        });
+        router.put("/service/:id")
+            .handler(routingContext -> {
+                String id = routingContext.request().getParam("id");
+                JsonObject jsonBody = routingContext.getBodyAsJson();
+
+                UpdateService updateService = new UpdateService(this.vertx);
+                updateService.execute(id, jsonBody).setHandler(result -> successHandler(routingContext, result, 200));
+            });
+    }
+
+    private void badRequestResponse(RoutingContext routingContext, Throwable ex) {
+        routingContext.response().setStatusCode(400)
+                .putHeader("content-type", "application/json")
+                .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
     }
 
     private void internalServerErrorResponse(RoutingContext routingContext, Throwable ex) {
@@ -121,6 +133,11 @@ public class MainVerticle extends AbstractVerticle {
 
     private void apiErrorHandler(RoutingContext routingContext) {
         Throwable failure = routingContext.failure();
+        if (failure instanceof ValidatorException) {
+            badRequestResponse(routingContext, failure);
+            return;
+        }
+
         if (failure instanceof NotFoundException) {
             notFoundResponse(routingContext, failure);
             return;

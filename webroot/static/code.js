@@ -65,9 +65,11 @@ function onDelete(evt) {
          'Content-Type': 'application/json'
      }
   })
-  .then(() => {
-     removeRow(id);
-     enableButtons();
+  .then((json) => {
+    if (!json.error) {
+       removeRow(id);
+    }
+    enableButtons();
   })
   .catch(() => enableButtons());
 }
@@ -87,7 +89,9 @@ function onSave(evt) {
   })
   .then(res => res.json())
   .then(json => {
-    addRowToContainer(json);
+    if (!json.error) {
+      addRowToContainer(json);
+    }
     clearInputs();
     enableButtons();
   })

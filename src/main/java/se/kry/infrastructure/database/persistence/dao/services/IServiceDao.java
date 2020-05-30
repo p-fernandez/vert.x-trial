@@ -1,7 +1,7 @@
-package se.kry.infrastructure.database.persistence.dao.service;
+package se.kry.infrastructure.database.persistence.dao.services;
 
 import io.vertx.core.Future;
-import se.kry.domain.entity.Service;
+import se.kry.domain.entities.Service;
 
 import java.util.ArrayList;
 
